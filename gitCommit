@@ -1,0 +1,10 @@
+git 提交步骤
+1. github创建好需要的仓库
+2. cd 项目的根路径下
+3. git init
+4. git add .
+5. git commit -m 'first commit'
+6. git remote add origin https://github.com/JackWang1230/hudi-zipper-table.git
+7. git push -u origin master
+8. 输入账号(JackWang1230)
+9. 输入密码(设置的token)
