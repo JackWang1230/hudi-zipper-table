@@ -57,6 +57,7 @@ public class SQLConstants {
             "  'write.precombine.field' = 'skuNo',\n" +
             "  'write.operation' = 'upsert',\n" +
             "  'hoodie.datasource.write.recordkey.field' = 'skuNo,startTime',\n" +
+            "  'hoodie.cleaner.commits.retained'='1',\n" +
             "  'write.insert.cluster' = 'true',\n"+
             "  'index.bootstrap.enabled' = 'true', \n" +
             "  'read.streaming.enabled' = 'true', \n" +
