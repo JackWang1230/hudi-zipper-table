@@ -61,7 +61,7 @@ public class SQLConstants {
             "  'write.insert.cluster' = 'true',\n"+
             "  'index.bootstrap.enabled' = 'true', \n" +
             "  'read.streaming.enabled' = 'true', \n" +
-            "  'read.streaming.start-commit' = '20211220000000', \n" +
+            "  'read.streaming.start-commit' = '20220110000000', \n" +
             "  'table.type' = 'COPY_ON_WRITE',\n" +
             "  'hive_sync.enable' = 'true', \n" +
             "  'hive_sync.mode' = 'hms', \n" +
