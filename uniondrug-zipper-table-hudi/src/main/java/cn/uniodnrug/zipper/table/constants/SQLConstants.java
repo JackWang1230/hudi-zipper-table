@@ -29,7 +29,7 @@ public class SQLConstants {
             "  'write.bucket_assign.tasks' = '4', "+
             "  'write.tasks' = '4',\n" +
             "  'read.streaming.enabled' = 'true', \n" +
-            "  'read.streaming.start-commit' = '20211225000000', \n" +
+            "  'read.streaming.start-commit' = '20220110000000', \n" +
             "  'table.type' = 'COPY_ON_WRITE',\n" +
             "  'hive_sync.enable' = 'true', \n" +
             "  'hive_sync.mode' = 'hms', \n" +
