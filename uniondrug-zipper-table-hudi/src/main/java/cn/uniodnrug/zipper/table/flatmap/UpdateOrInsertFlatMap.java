@@ -34,7 +34,7 @@ public class UpdateOrInsertFlatMap extends RichFlatMapFunction<CanalTransDataMod
         ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
         String rkList = parameterTool.getRequired(PropertiesConstants.DATA_RECORD_KEY_COLUMN);
         List<String> cols = Arrays.asList(rkList.split(","));
-        if (canalTransDataModel.getType().equals("UPDATE")) {
+        if (canalTransDataModel.getType().toUpperCase().equals("UPDATE")) {
 
             Object newData = canalTransDataModel.getData();
             Object oldData = canalTransDataModel.getOld();
@@ -75,7 +75,7 @@ public class UpdateOrInsertFlatMap extends RichFlatMapFunction<CanalTransDataMod
                 collector.collect(lastGoodsSkuInfo);
             }
         }
-        if (canalTransDataModel.getType().equals("INSERT")) {
+        if (canalTransDataModel.getType().toUpperCase().equals("INSERT")) {
             Object newData = canalTransDataModel.getData();
             GoodsSkuInfo newGoodsSkuInfo = objectMapper.convertValue(newData, GoodsSkuInfo.class);
             newGoodsSkuInfo.setStartTime(newGoodsSkuInfo.getEndTime());
