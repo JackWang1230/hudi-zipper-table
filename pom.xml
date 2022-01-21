@@ -10,5 +10,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>uniondrug-zipper-table-hudi</module>
+        <module>uniondrug-generic-zipper-table</module>
     </modules>
 </project>
