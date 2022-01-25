@@ -35,7 +35,7 @@ public class FileInputDemo {
 
             Properties props = new Properties();
             for (int i = 0; i < split.length; i++) {
-                props.put(SqlType.getValue1(i),split[i]);
+                props.put(SqlType.getRealValue(i),split[i]);
             }
             ParameterTool parameterTool = ParameterTool.fromMap((Map) props);
 
@@ -73,7 +73,7 @@ public class FileInputDemo {
                 String[] sqlList = s2.split(";");
 
                 for (int i = 0; i < sqlList.length; i++) {
-                    props.put(SqlType.getValue1(i),sqlList[i]);
+                    props.put(SqlType.getRealValue(i),sqlList[i]);
                 }
                 // parameterTool = ParameterTool.fromMap((Map) props);
             }else {

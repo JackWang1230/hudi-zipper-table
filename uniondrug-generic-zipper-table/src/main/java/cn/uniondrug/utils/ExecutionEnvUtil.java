@@ -43,7 +43,7 @@ public class ExecutionEnvUtil {
                 String s2 = stringBuilder.toString();
                 String[] sqlList = s2.split(";");
                 for (int i = 0; i < sqlList.length; i++) {
-                    props.put(SqlType.getValue1(i),sqlList[i]);
+                    props.put(SqlType.getRealValue(i),sqlList[i]);
                 }
             }else {
                 BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream(map.get(key))

@@ -5,11 +5,9 @@ import cn.uniondrug.utils.MysqlUtil;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 
-import java.math.BigDecimal;
 import java.sql.*;
 
 import static cn.uniondrug.constants.PropertiesConstants.DATA_DETAIL_BASED_ID;
@@ -49,13 +47,13 @@ public class InitialDataIndexFlatMapFunction extends RichFlatMapFunction<PageSta
 
                     String columnTypeName = metaData.getColumnTypeName(i);
                     if (columnTypeName.toLowerCase().equals("varchar")){
-                        rowData.setField(i-1, rs.getObject(i).toString());
+                        rowData.setField(i-1, rs.getString(i));
                     }else if (columnTypeName.toLowerCase().equals("int")){
-                        rowData.setField(i-1, Integer.parseInt(rs.getObject(i).toString()));
+                        rowData.setField(i-1, rs.getInt(i));
                     }else if(columnTypeName.toLowerCase().contains("decimal")){
-                        rowData.setField(i-1, (BigDecimal)rs.getObject(i));
+                        rowData.setField(i-1, rs.getBigDecimal(i));
                     }else if (columnTypeName.toLowerCase().equals("timestamp")){
-                        rowData.setField(i-1, rs.getObject(i).toString());
+                        rowData.setField(i-1, rs.getTimestamp(i));
                     }else {
                         rowData.setField(i-1,rs.getObject(i).toString());
                     }

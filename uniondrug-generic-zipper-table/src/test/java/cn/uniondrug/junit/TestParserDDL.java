@@ -72,12 +72,7 @@ public class TestParserDDL {
         for (String s : split) {
             //System.out.println(s);
             String[] s1 = s.trim().split(" ");
-            List list2 = Arrays.stream(s1).collect(Collectors.toList());
-            String o = list2.get(0).toString();
-            String o1 = list2.get(1).toString();
-            System.out.println(o);
-            System.out.println(o1);
-            hashMap.put(o,o1);
+            hashMap.put(s1[0],s1[1]);
         }
         System.out.println("ss");
     }

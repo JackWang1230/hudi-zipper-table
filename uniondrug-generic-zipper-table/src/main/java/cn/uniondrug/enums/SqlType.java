@@ -24,7 +24,7 @@ public enum SqlType {
         return this.value;
     }
 
-    public static String getValue1(int code){
+    public static String getRealValue(int code){
         for (SqlType value1 : SqlType.values()) {
             if (value1.getCode() == code) {
                 return value1.getValue();
@@ -34,7 +34,7 @@ public enum SqlType {
     }
 
     public static void main(String[] args) {
-        String value1 = SqlType.getValue1(1);
+        String value1 = SqlType.getRealValue(1);
         System.out.println(value1);
     }
 
