@@ -31,7 +31,6 @@ public class InitialZipperTableHudiJob {
 
         System.setProperty("HADOOP_USER_NAME", "uniondrug");
         final ParameterTool parameterTool = ExecutionEnvUtil.createParameterTool(args);
-//        System.out.println("11");
         // basic flink env
         StreamExecutionEnvironment env = ExecutionEnvUtil.getEnv(parameterTool);
         EnvironmentSettings settings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
@@ -39,30 +38,25 @@ public class InitialZipperTableHudiJob {
         DataStreamSource<PageStartEndOffset> mysqlIndexData = env.addSource(new MysqlIndexSource());
 
         TypeInformation[] types = new TypeInformation[9];
-        for (int i = 0; i < 9; i++) {
-            types[i]= Types.STRING;
-        }
-        String[] inputField={"a","b","c","d","e","f","g","h","i"};
-        RowTypeInfo rowTypeInfo = new RowTypeInfo(types);
+        types[0] =Types.STRING;
+        types[1] =Types.STRING;
+        types[2] =Types.STRING;
+        types[3] =Types.STRING;
+        types[4] =Types.INT;
+        types[5] =Types.BIG_DEC;
+        types[6] =Types.STRING;
+        types[7] =Types.STRING;
+        types[8] =Types.STRING;
+//        for (int i = 0; i < 9; i++) {
+//            types[i]= Types.STRING;
+//        }
+        String[] inputField={"sku_no","common_name","approval_number","internal_id","merchant_id","price","trade_code","startTime","endTime"};
+        RowTypeInfo rowTypeInfo = new RowTypeInfo(types,inputField);
         DataStream<Row> initialData = mysqlIndexData.flatMap(new InitialDataIndexFlatMapFunction()).returns(rowTypeInfo);
         ste.fromDataStream(initialData).printSchema();
         ste.createTemporaryView("dd",initialData);
 
         ste.executeSql("select * from dd").print();
-        // Table table1 = ste.sqlQuery("select * from " + table);
-//        table1.execute().print();
-        //DataStream<Row> rowDataStream = ste.toAppendStream(table1, Row.class);
-//
-//        Expression[] eps = new Expression[inputField.length];
-//
-//        for (int i = 0; i < inputField.length; i++) {
-//            eps[i] = $(inputField[i]);
-//        }
-//        ste.fromDataStream(initialData, eps).printSchema();
-        //ste.sqlQuery("select * from " + table2).execute().print();
-        //ste.createTemporaryView("goods_sku_table",table);
-//        ste.createTemporaryView("goods_sku_table",initialData,"s1,s2,s3,s4,s5,s6,s7,s8,s9");
-//        ste.executeSql("select * from "+ table).print();
 //        ste.executeSql(parameterTool.get(BULK_INSERT_TABLE));
 //        ste.executeSql(parameterTool.get(SOURCE_DATA_2_HUDI));
         env.execute("dddd");

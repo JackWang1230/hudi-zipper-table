@@ -9,8 +9,8 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMap
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 
+import java.math.BigDecimal;
 import java.sql.*;
-import java.util.ArrayList;
 
 import static cn.uniondrug.constants.PropertiesConstants.DATA_DETAIL_BASED_ID;
 
@@ -23,72 +23,45 @@ public class InitialDataIndexFlatMapFunction extends RichFlatMapFunction<PageSta
 
 
     private static final long serialVersionUID = 8195552156939171805L;
-    private int columnCount;
-
-    private String[] inputField;
-
-
-//
-//    TypeInformation[] types = new TypeInformation[columnCount];
-//        for (int i = 0; i < 9; i++) {
-//        types[i]= Types.STRING;
-//    }
-//    String[] inputField={"a","b","c","d","e","f","g","h","i"};
-//    RowTypeInfo rowTypeInfo = new RowTypeInfo(types,inputField);
-
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
     }
 
     @Override
-    public void flatMap(PageStartEndOffset value, Collector<Row> collector) throws Exception {
+    public void flatMap(PageStartEndOffset value, Collector<Row> collector)  {
 
         ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
         Connection connection = MysqlUtil.getConnection(parameterTool);
         String dataDetailBasedIdSql = parameterTool.get(DATA_DETAIL_BASED_ID);
         PreparedStatement ps = null;
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             ps = connection.prepareStatement(dataDetailBasedIdSql);
             ps.setInt(1, value.getStartOffset());
             ps.setInt(2, value.getEndOffset());
             ResultSet rs = ps.executeQuery();
             ResultSetMetaData metaData = rs.getMetaData();
-            columnCount = metaData.getColumnCount();
-//            GenericRowData rowData = new GenericRowData(columnCount);
-//            HashMap<String, Object> rowData = Maps.newHashMap();
-//            Object[] resultObj = new Object[columnCount];
-
-//            rowData.setField(0,"ss");
-//            rowData.setField(1,11);
-//            rowData.setField(2,22);
-//            rowData.setField(3,33);
-//            collector.collect(rowData);
-            org.apache.flink.types.Row rowData = org.apache.flink.types.Row.withNames();
-            ArrayList<Object> objects = new ArrayList<>();
+            int columnCount = metaData.getColumnCount();
+            Row rowData = new Row(columnCount);
             while (rs.next()) {
-//                Row rowData = new Row(columnCount);
-
                 for (int i = 1; i <= columnCount; i++) {
-//                    resultObj[i-1]=rs.getObject(i);
-//                     rowData.put(metaData.getColumnLabel(i),rs.getObject(i));
-//                    rowData.setField(i-1, rs.getObject(i).toString());
-//                    String columnName = metaData.getColumnName(i);
-//                    System.out.println(columnName);
-                    rowData.setField(metaData.getColumnName(i),rs.getObject(i).toString());
+                    // todo 基于数据字段类型返回对应的java数据类型
+
+                    String columnTypeName = metaData.getColumnTypeName(i);
+                    if (columnTypeName.toLowerCase().equals("varchar")){
+                        rowData.setField(i-1, rs.getObject(i).toString());
+                    }else if (columnTypeName.toLowerCase().equals("int")){
+                        rowData.setField(i-1, Integer.parseInt(rs.getObject(i).toString()));
+                    }else if(columnTypeName.toLowerCase().contains("decimal")){
+                        rowData.setField(i-1, (BigDecimal)rs.getObject(i));
+                    }else if (columnTypeName.toLowerCase().equals("timestamp")){
+                        rowData.setField(i-1, rs.getObject(i).toString());
+                    }else {
+                        rowData.setField(i-1,rs.getObject(i).toString());
+                    }
                 }
-                objects.add(rowData);
-//                String s = rowData.toString();
-//                System.out.println(s);
-//                collector.collect(Row.of(resultObj));
                 collector.collect(rowData);
-//                collector.collect(objectMapper.convertValue(rowData,GoodsSkuInfo.class));
             }
-//            TypeInformation<GenericRowData> typeInfo;
-//            typeInfo = TypeExtractor.getForObject(rowData);
-//            DataStreamSource.fromCollection(Arrays.asList(data), typeInfo)
-//
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
