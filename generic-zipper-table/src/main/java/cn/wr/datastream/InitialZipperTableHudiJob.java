@@ -18,6 +18,9 @@ import org.apache.flink.types.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static cn.wr.constants.PropertiesConstants.BULK_INSERT_TABLE;
+import static cn.wr.constants.PropertiesConstants.SOURCE_DATA_2_HUDI;
+
 
 /**
  * @author RWang
@@ -45,8 +48,8 @@ public class InitialZipperTableHudiJob {
         ste.createTemporaryView(tableName,initialData);
 
         ste.executeSql("select * from "+tableName).print();
-//        ste.executeSql(parameterTool.get(BULK_INSERT_TABLE));
-//        ste.executeSql(parameterTool.get(SOURCE_DATA_2_HUDI));
+        ste.executeSql(parameterTool.get(BULK_INSERT_TABLE));
+        ste.executeSql(parameterTool.get(SOURCE_DATA_2_HUDI));
         env.execute("dddd");
 //        Table result = ste.sqlQuery("select * from dd");
 //        result.execute().print();
