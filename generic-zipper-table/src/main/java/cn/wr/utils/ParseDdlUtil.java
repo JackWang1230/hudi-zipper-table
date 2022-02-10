@@ -13,6 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static cn.wr.constants.PropertiesConstants.BULK_INSERT_TABLE;
+import static cn.wr.constants.PropertiesConstants.SOURCE_DATA_2_HUDI;
 
 /**
  * @author RWang
@@ -130,5 +131,16 @@ public class ParseDdlUtil {
                 break;
         }
         return types;
+    }
+
+    /**
+     * 获取表结构
+     * @param tool
+     * @return
+     */
+    public static String getTableName(ParameterTool tool){
+
+        String insertStat = tool.get(SOURCE_DATA_2_HUDI).trim().replaceAll(" +"," ");
+        return insertStat.split(" ")[insertStat.split(" ").length - 1];
     }
 }

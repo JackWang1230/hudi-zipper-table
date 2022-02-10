@@ -39,11 +39,12 @@ public class InitialZipperTableHudiJob {
         DataStreamSource<PageStartEndOffset> mysqlIndexData = env.addSource(new MysqlIndexSource());
 
         RowTypeInfo rowTypeInfo = ParseDdlUtil.getRowTypeInfo(parameterTool);
+        String tableName = ParseDdlUtil.getTableName(parameterTool);
         DataStream<Row> initialData = mysqlIndexData.flatMap(new InitialDataIndexFlatMapFunction()).returns(rowTypeInfo);
         ste.fromDataStream(initialData).printSchema();
-        ste.createTemporaryView("dd",initialData);
+        ste.createTemporaryView(tableName,initialData);
 
-        ste.executeSql("select * from dd").print();
+        ste.executeSql("select * from "+tableName).print();
 //        ste.executeSql(parameterTool.get(BULK_INSERT_TABLE));
 //        ste.executeSql(parameterTool.get(SOURCE_DATA_2_HUDI));
         env.execute("dddd");
