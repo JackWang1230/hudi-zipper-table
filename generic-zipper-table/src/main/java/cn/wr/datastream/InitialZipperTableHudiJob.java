@@ -4,6 +4,7 @@ import cn.wr.flatmap.InitialDataIndexFlatMapFunction;
 import cn.wr.model.PageStartEndOffset;
 import cn.wr.source.MysqlIndexSource;
 import cn.wr.utils.ExecutionEnvUtil;
+import cn.wr.utils.ParseDdlUtil;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
@@ -37,21 +38,7 @@ public class InitialZipperTableHudiJob {
         StreamTableEnvironment ste = StreamTableEnvironment.create(env, settings);
         DataStreamSource<PageStartEndOffset> mysqlIndexData = env.addSource(new MysqlIndexSource());
 
-        TypeInformation[] types = new TypeInformation[9];
-        types[0] =Types.STRING;
-        types[1] =Types.STRING;
-        types[2] =Types.STRING;
-        types[3] =Types.STRING;
-        types[4] =Types.INT;
-        types[5] =Types.BIG_DEC;
-        types[6] =Types.STRING;
-        types[7] =Types.STRING;
-        types[8] =Types.STRING;
-//        for (int i = 0; i < 9; i++) {
-//            types[i]= Types.STRING;
-//        }
-        String[] inputField={"sku_no","common_name","approval_number","internal_id","merchant_id","price","trade_code","startTime","endTime"};
-        RowTypeInfo rowTypeInfo = new RowTypeInfo(types,inputField);
+        RowTypeInfo rowTypeInfo = ParseDdlUtil.getRowTypeInfo(parameterTool);
         DataStream<Row> initialData = mysqlIndexData.flatMap(new InitialDataIndexFlatMapFunction()).returns(rowTypeInfo);
         ste.fromDataStream(initialData).printSchema();
         ste.createTemporaryView("dd",initialData);
