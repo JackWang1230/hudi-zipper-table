@@ -26,6 +26,11 @@ public class ParseDdlUtil {
     private static final String REGULAR_EXPRESSION ="(?<=\\().*?(?=(WITH|with))";
 
 
+    /**
+     * 解析ddl
+     * @param tool 配置
+     * @return 解析后结构
+     */
     public static HashMap<String,String> parseDdl(ParameterTool tool){
 
         HashMap<String,String> hashMap = new LinkedHashMap<>();
@@ -54,10 +59,14 @@ public class ParseDdlUtil {
         return hashMap;
     }
 
+    /**
+     * 获取row需要的类型
+     * @param tool
+     * @return
+     */
     public static RowTypeInfo getRowTypeInfo(ParameterTool tool){
 
         try {
-
             HashMap<String, String> map = parseDdl(tool);
             int size = map.size();
             if (size>0){
@@ -79,6 +88,12 @@ public class ParseDdlUtil {
     }
 
 
+    /**
+     * 获取typeInformation
+     * @param type
+     * @param types
+     * @return
+     */
     public static  TypeInformation<?>[] getTypeInformation(List<String> type, TypeInformation<?>[] types){
 
         for (int i = 0; i < type.size(); i++) {
@@ -92,6 +107,11 @@ public class ParseDdlUtil {
         return types;
     }
 
+    /**
+     * 转换数据类型为row 需要的
+     * @param type
+     * @return
+     */
     public static TypeInformation<?> convertTypes(String type){
 
         TypeInformation<?> types;
