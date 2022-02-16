@@ -1,12 +1,11 @@
 package cn.wr.datastream;
 
+import cn.wr.enums.SqlTypeEnum;
 import cn.wr.flatmap.InitialDataIndexFlatMapFunction;
 import cn.wr.model.PageStartEndOffset;
 import cn.wr.source.MysqlIndexSource;
 import cn.wr.utils.ExecutionEnvUtil;
 import cn.wr.utils.ParseDdlUtil;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.typeutils.RowTypeInfo;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -17,10 +16,6 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static cn.wr.constants.PropertiesConstants.BULK_INSERT_TABLE;
-import static cn.wr.constants.PropertiesConstants.SOURCE_DATA_2_HUDI;
-
 
 /**
  * @author RWang
@@ -42,16 +37,13 @@ public class InitialZipperTableHudiJob {
         DataStreamSource<PageStartEndOffset> mysqlIndexData = env.addSource(new MysqlIndexSource());
 
         RowTypeInfo rowTypeInfo = ParseDdlUtil.getRowTypeInfo(parameterTool);
-        String tableName = ParseDdlUtil.getTableName(parameterTool);
+        String tableName = ParseDdlUtil.getTableName(parameterTool,0);
         DataStream<Row> initialData = mysqlIndexData.flatMap(new InitialDataIndexFlatMapFunction()).returns(rowTypeInfo);
         ste.fromDataStream(initialData).printSchema();
         ste.createTemporaryView(tableName,initialData);
-
-        ste.executeSql("select * from "+tableName).print();
-        ste.executeSql(parameterTool.get(BULK_INSERT_TABLE));
-        ste.executeSql(parameterTool.get(SOURCE_DATA_2_HUDI));
+        // ste.executeSql("select * from "+ tableName).print();
+//        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(0)));
+        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(4)));
         env.execute("dddd");
-//        Table result = ste.sqlQuery("select * from dd");
-//        result.execute().print();
     }
 }

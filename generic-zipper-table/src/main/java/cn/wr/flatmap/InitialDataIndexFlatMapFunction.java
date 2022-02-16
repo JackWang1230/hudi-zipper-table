@@ -1,5 +1,6 @@
 package cn.wr.flatmap;
 
+import cn.wr.enums.SqlTypeEnum;
 import cn.wr.model.PageStartEndOffset;
 import cn.wr.utils.MysqlUtil;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
@@ -8,9 +9,8 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.types.Row;
 import org.apache.flink.util.Collector;
 
+import java.math.BigInteger;
 import java.sql.*;
-
-import static cn.wr.constants.PropertiesConstants.DATA_DETAIL_BASED_ID;
 
 /**
  * @author RWang
@@ -31,7 +31,7 @@ public class InitialDataIndexFlatMapFunction extends RichFlatMapFunction<PageSta
 
         ParameterTool parameterTool = (ParameterTool) getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
         Connection connection = MysqlUtil.getConnection(parameterTool);
-        String dataDetailBasedIdSql = parameterTool.get(DATA_DETAIL_BASED_ID);
+        String dataDetailBasedIdSql = parameterTool.get(SqlTypeEnum.getRealValue(2));
         PreparedStatement ps = null;
         try {
             ps = connection.prepareStatement(dataDetailBasedIdSql);
@@ -44,18 +44,25 @@ public class InitialDataIndexFlatMapFunction extends RichFlatMapFunction<PageSta
             while (rs.next()) {
                 for (int i = 1; i <= columnCount; i++) {
                     // todo 基于数据字段类型返回对应的java数据类型
-
-                    String columnTypeName = metaData.getColumnTypeName(i);
-                    if (columnTypeName.toLowerCase().equals("varchar")){
-                        rowData.setField(i-1, rs.getString(i));
-                    }else if (columnTypeName.toLowerCase().equals("int")){
-                        rowData.setField(i-1, rs.getInt(i));
-                    }else if(columnTypeName.toLowerCase().contains("decimal")){
-                        rowData.setField(i-1, rs.getBigDecimal(i));
-                    }else if (columnTypeName.toLowerCase().equals("timestamp")){
-                        rowData.setField(i-1, rs.getTimestamp(i));
-                    }else {
-                        rowData.setField(i-1,rs.getObject(i).toString());
+                    String columnTypeName = metaData.getColumnTypeName(i).toLowerCase();
+                    switch (columnTypeName){
+                        case "varchar":
+                            rowData.setField(i-1, rs.getString(i));
+                            break;
+                        case "int":
+                            rowData.setField(i-1, rs.getInt(i));
+                            break;
+                        case "bigint":
+                            rowData.setField(i-1,new BigInteger(rs.getString(i)));
+                            break;
+                        case "decimal":
+                            rowData.setField(i-1, rs.getBigDecimal(i));
+                            break;
+                        case "timestamp":
+                            rowData.setField(i-1, rs.getTimestamp(i));
+                        default:
+                            rowData.setField(i-1,rs.getObject(i).toString());
+                            break;
                     }
                 }
                 collector.collect(rowData);

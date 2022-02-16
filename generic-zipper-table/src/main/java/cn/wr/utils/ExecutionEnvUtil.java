@@ -1,7 +1,7 @@
 package cn.wr.utils;
 
 import cn.wr.constants.PropertiesConstants;
-import cn.wr.enums.SqlType;
+import cn.wr.enums.SqlTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -21,6 +21,11 @@ import java.util.Properties;
 
 public class ExecutionEnvUtil {
 
+    private static final String FILE = "file";
+    private static final String F = "f";
+    private static final String SQL_FILE = "sqlFile";
+    private static final String UTF_8 = "utf-8";
+
     /**
      * @param args args from external config file
      * @return ParameterTool
@@ -32,9 +37,9 @@ public class ExecutionEnvUtil {
         Properties props = new Properties();
         for (Map.Entry<String, String> stringStringEntry : map.entrySet()) {
             String key = stringStringEntry.getKey();
-            if (key.equals("file") | key.equals("f") | key.equals("sqlFile")){
+            if (key.equals(FILE) | key.equals(F) | key.equals(SQL_FILE)){
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(map.get(key))
-                        , "utf-8"));
+                        , UTF_8));
                 StringBuilder stringBuilder = new StringBuilder();
                 String line="";
                 while ((line=bufferedReader.readLine() )!= null){
@@ -43,15 +48,15 @@ public class ExecutionEnvUtil {
                 String s2 = stringBuilder.toString();
                 String[] sqlList = s2.split(";");
                 for (int i = 0; i < sqlList.length; i++) {
-                    props.put(SqlType.getRealValue(i),sqlList[i]);
+                    props.put(SqlTypeEnum.getRealValue(i),sqlList[i]);
                 }
             }else {
                 BufferedReader buff = new BufferedReader(new InputStreamReader(new FileInputStream(map.get(key))
-                        , "utf-8"));
+                        , UTF_8));
                 props.load(buff);
             }
         }
-       return ParameterTool.fromMap((Map) props);
+        return ParameterTool.fromMap((Map) props);
     }
 
     /**
@@ -104,8 +109,8 @@ public class ExecutionEnvUtil {
         // config restart strategy
         env.getConfig().setRestartStrategy(RestartStrategies.fixedDelayRestart(4,60000));
         if (parameterTool.getBoolean(PropertiesConstants.STREAM_CHECKPOINT_ENABLE,true)){
-             env.enableCheckpointing(parameterTool.getLong(PropertiesConstants.STREAM_CHECKPOINT_INTERVAL,6000)
-                     , CheckpointingMode.EXACTLY_ONCE);
+            env.enableCheckpointing(parameterTool.getLong(PropertiesConstants.STREAM_CHECKPOINT_INTERVAL,6000)
+                    , CheckpointingMode.EXACTLY_ONCE);
         }
 //        RocksDBStateBackend rocksDBStateBackend = new RocksDBStateBackend(parameterTool.get(PropertiesConstants.STREAM_CHECKPOINT_PATH));
 //        rocksDBStateBackend.isIncrementalCheckpointsEnabled();
@@ -113,7 +118,8 @@ public class ExecutionEnvUtil {
         EmbeddedRocksDBStateBackend embeddedRocksDBStateBackend = new EmbeddedRocksDBStateBackend();
         embeddedRocksDBStateBackend.isIncrementalCheckpointsEnabled();
         env.setStateBackend(embeddedRocksDBStateBackend);
-        env.getCheckpointConfig().setCheckpointStorage(parameterTool.get(PropertiesConstants.STREAM_CHECKPOINT_PATH));
+        String topic = ParseDdlUtil.getTableName(parameterTool, 1);
+        env.getCheckpointConfig().setCheckpointStorage(parameterTool.get(PropertiesConstants.STREAM_CHECKPOINT_PATH)+topic);
         env.getConfig().setGlobalJobParameters(parameterTool);
         return env;
     }

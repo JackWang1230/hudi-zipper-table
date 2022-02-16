@@ -6,8 +6,8 @@ CREATE TABLE if not exists goods_zipper_hudi
   merchant_id int,
   price decimal(10,2),
   trade_code STRING,
-  startTime STRING,
-  endTime STRING
+  start_time STRING,
+  end_time STRING
 )
 WITH (
   'connector' = 'hudi',
@@ -37,15 +37,15 @@ CREATE TABLE goods_zipper_hudi
  merchantId int,
  price decimal(10,2),
  tradeCode STRING,
- startTime STRING,
- endTime STRING
+ start_time STRING,
+ end_time STRING
 )
 WITH (
   'connector' = 'hudi',
   'path' = 'hdfs://192.168.3.111:8020/hudi/flink/goods_zipper_hudi',
   'write.precombine.field' = 'sku_no',
   'write.operation' = 'upsert',
-  'hoodie.datasource.write.recordkey.field' = 'sku_no,startTime',
+  'hoodie.datasource.write.recordkey.field' = 'sku_no,start_time',
   'write.insert.cluster' = 'true',
   'hoodie.cleaner.commits.retained'='2',
   'index.bootstrap.enabled' = 'true',

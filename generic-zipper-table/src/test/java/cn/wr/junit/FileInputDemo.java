@@ -1,6 +1,6 @@
 package cn.wr.junit;
 
-import cn.wr.enums.SqlType;
+import cn.wr.enums.SqlTypeEnum;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class FileInputDemo {
 
             Properties props = new Properties();
             for (int i = 0; i < split.length; i++) {
-                props.put(SqlType.getRealValue(i),split[i]);
+                props.put(SqlTypeEnum.getRealValue(i),split[i]);
             }
             ParameterTool parameterTool = ParameterTool.fromMap((Map) props);
 
@@ -73,7 +73,7 @@ public class FileInputDemo {
                 String[] sqlList = s2.split(";");
 
                 for (int i = 0; i < sqlList.length; i++) {
-                    props.put(SqlType.getRealValue(i),sqlList[i]);
+                    props.put(SqlTypeEnum.getRealValue(i),sqlList[i]);
                 }
                 // parameterTool = ParameterTool.fromMap((Map) props);
             }else {

@@ -20,20 +20,22 @@ import static cn.wr.constants.PropertiesConstants.KAFKA_ZIPPER_TABLE_OFFSET;
 
 public class KafkaConfigUtil {
 
+    private static final String G1="_g1";
+
     /**
      * get kafka basic config infos
      *
      * @param params config params
      * @return props
      */
-    private static Properties createKafkaProps(ParameterTool params) {
+    private static Properties createKafkaProps(ParameterTool params,String groupId) {
 
         Properties props = params.getProperties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, params.get(PropertiesConstants.KAFKA_ZIPPER_TABLE_SERVERS));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, params.get(PropertiesConstants.KAFKA_ZIPPER_TABLE_GROUP));
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return props;
     }
 
@@ -45,8 +47,10 @@ public class KafkaConfigUtil {
     public static DataStreamSource<String> createZipperTableSource(StreamExecutionEnvironment env) {
 
         ParameterTool parameters = (ParameterTool) env.getConfig().getGlobalJobParameters();
-        String topic = parameters.getRequired(PropertiesConstants.KAFKA_ZIPPER_TABLE_TOPIC);
-        Properties props = createKafkaProps(parameters);
+        // String topic = parameters.getRequired(PropertiesConstants.KAFKA_ZIPPER_TABLE_TOPIC);
+        String topic = ParseDdlUtil.getTableName(parameters, 1);
+        String groupId = topic+G1;
+        Properties props = createKafkaProps(parameters,groupId);
         FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>(topic, new SimpleStringSchema(), props);
         if (parameters.get(KAFKA_ZIPPER_TABLE_OFFSET).equals("earliest")){
             consumer.setStartFromEarliest();

@@ -1,6 +1,6 @@
 package cn.wr.enums;
 
-public enum SqlType {
+public enum SqlTypeEnum {
 
     BULK_INSERT_TABLE(0,"bulk.insert.table"),
     ACHIEVE_MAX_MIN_ID(1,"achieve.max.min.id"),
@@ -11,7 +11,7 @@ public enum SqlType {
     private final int code;
     private final String value;
 
-    SqlType(int code, String value){
+    SqlTypeEnum(int code, String value){
         this.code=code;
         this.value = value;
     }
@@ -25,7 +25,7 @@ public enum SqlType {
     }
 
     public static String getRealValue(int code){
-        for (SqlType value1 : SqlType.values()) {
+        for (SqlTypeEnum value1 : SqlTypeEnum.values()) {
             if (value1.getCode() == code) {
                 return value1.getValue();
             }
@@ -34,7 +34,7 @@ public enum SqlType {
     }
 
     public static void main(String[] args) {
-        String value1 = SqlType.getRealValue(1);
+        String value1 = SqlTypeEnum.getRealValue(1);
         System.out.println(value1);
     }
 
