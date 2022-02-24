@@ -1,6 +1,7 @@
 package cn.wr.datastream;
 
 import cn.wr.constants.PropertiesConstants;
+import cn.wr.enums.SqlTypeEnum;
 import cn.wr.flatmap.CanalTransModelFlatMap;
 import cn.wr.flatmap.UpdateOrInsertDataFlatMap;
 import cn.wr.model.CanalTransDataModel;
@@ -39,10 +40,10 @@ public class IncrZipperTableHudiJob {
         DataStream<CanalTransDataModel> canalMode = data.flatMap(new CanalTransModelFlatMap());
         RowTypeInfo rowTypeInfo = ParseDdlUtil.getRowTypeInfo(parameterTool);
         String tableName = ParseDdlUtil.getTableName(parameterTool,0);
-        DataStream<Row> goodsSku = canalMode.flatMap(new UpdateOrInsertDataFlatMap()).returns(rowTypeInfo);
-        ste.createTemporaryView(tableName, goodsSku);
-//        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(3)));
-//        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(4)));
+        DataStream<Row> incrData = canalMode.flatMap(new UpdateOrInsertDataFlatMap()).returns(rowTypeInfo);
+        ste.createTemporaryView(tableName, incrData);
+        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(3)));
+        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(4)));
         env.execute("increment_upsert_job");
     }
 }

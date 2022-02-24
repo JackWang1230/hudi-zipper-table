@@ -55,6 +55,9 @@ public class InitialDataIndexFlatMapFunction extends RichFlatMapFunction<PageSta
                         case "bigint":
                             rowData.setField(i-1,new BigInteger(rs.getString(i)));
                             break;
+                        case "double":
+                            rowData.setField(i-1,rs.getDouble(i));
+                            break;
                         case "decimal":
                             rowData.setField(i-1, rs.getBigDecimal(i));
                             break;

@@ -28,7 +28,6 @@ public class InitialZipperTableHudiJob {
 
     public static void main(String[] args) throws Exception {
 
-        System.setProperty("HADOOP_USER_NAME", "uniondrug");
         final ParameterTool parameterTool = ExecutionEnvUtil.createParameterTool(args);
         // basic flink env
         StreamExecutionEnvironment env = ExecutionEnvUtil.getEnv(parameterTool);
@@ -42,8 +41,8 @@ public class InitialZipperTableHudiJob {
         ste.fromDataStream(initialData).printSchema();
         ste.createTemporaryView(tableName,initialData);
         // ste.executeSql("select * from "+ tableName).print();
-//        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(0)));
+        ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(0)));
         ste.executeSql(parameterTool.get(SqlTypeEnum.getRealValue(4)));
-        env.execute("dddd");
+        env.execute("initial_job");
     }
 }

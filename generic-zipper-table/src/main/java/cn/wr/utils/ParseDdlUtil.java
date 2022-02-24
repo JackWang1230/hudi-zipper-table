@@ -22,9 +22,15 @@ public class ParseDdlUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(ParseDdlUtil.class);
 
+
     private static final String REGULAR_EXPRESSION = "(?<=\\().*?(?=(WITH|with))";
     private static final String PARTITIONED_BY = "partitioned by";
 
+    /**
+     *  将配置文件中的ddl 语句解析成需要的字段名称及字段类型
+     * @param tool 配置文件
+     * @return HashMap
+     */
     public static HashMap<String, String> parseDdl(ParameterTool tool) {
 
         HashMap<String, String> hashMap = new LinkedHashMap<>();
@@ -59,6 +65,11 @@ public class ParseDdlUtil {
         return hashMap;
     }
 
+    /**
+     *  通过解析ddl 自动生成row需要的每个字段对应的数据类型及字段名称
+     * @param tool 配置参数
+     * @return RowTypeInfo
+     */
     public static RowTypeInfo getRowTypeInfo(ParameterTool tool) {
 
         try {
@@ -84,6 +95,12 @@ public class ParseDdlUtil {
     }
 
 
+    /**
+     *  基于字段长度，自动解析生成rowType 中需要的字段type
+     * @param type ddl中字段类型
+     * @param types row中需要的type
+     * @return row中需要的type
+     */
     public static TypeInformation<?>[] getTypeInformation(List<String> type, TypeInformation<?>[] types) {
 
         for (int i = 0; i < type.size(); i++) {
@@ -97,6 +114,11 @@ public class ParseDdlUtil {
         return types;
     }
 
+    /**
+     *  将ddl 中 type类型转换成 TypeInformation对应的type类型
+     * @param type
+     * @return
+     */
     public static TypeInformation<?> convertTypes(String type) {
 
         TypeInformation<?> types;
@@ -109,6 +131,9 @@ public class ParseDdlUtil {
                 break;
             case "bigint":
                 types =Types.BIG_INT;
+                break;
+            case "double":
+                types = Types.DOUBLE;
                 break;
             default:
                 types = Types.STRING;
@@ -138,5 +163,6 @@ public class ParseDdlUtil {
         assert insertStat != null;
         return insertStat.split(" ")[insertStat.split(" ").length - 1];
     }
+
 
 }

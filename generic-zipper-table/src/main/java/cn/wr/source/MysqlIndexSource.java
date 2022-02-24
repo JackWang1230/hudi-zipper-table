@@ -1,6 +1,7 @@
 package cn.wr.source;
 
 
+import cn.wr.enums.SqlTypeEnum;
 import cn.wr.model.PageStartEndOffset;
 import cn.wr.utils.MysqlUtil;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -51,14 +52,15 @@ public class MysqlIndexSource extends RichSourceFunction<PageStartEndOffset> {
         Connection connection = MysqlUtil.getConnection(parameterTool);
         PreparedStatement ps = null;
         try {
-            //todo 以文件形式传入
 //            ps = connection.prepareStatement(GOODS_MAX_MIN_VALUE);
-            ps = connection.prepareStatement("GOODS_MAX_MIN_VALUE");
+            ps = connection.prepareStatement(parameterTool.get(SqlTypeEnum.getRealValue(1)));
             int pageLength = parameterTool.getInt(DATA_PAGE_SIZE);
             ResultSet resultSet = ps.executeQuery();
             while (resultSet.next()) {
                 int maxId = resultSet.getInt("max_id");
                 int minId = resultSet.getInt("min_id");
+//                int maxId = 10990;
+//                int minId = 10980;
                 for (int i = minId; i < maxId; i+=pageLength) {
                     PageStartEndOffset pageStartEndOffset = new PageStartEndOffset();
                     pageStartEndOffset.setStartOffset(i);

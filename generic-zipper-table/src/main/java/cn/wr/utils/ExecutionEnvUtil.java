@@ -21,10 +21,15 @@ import java.util.Properties;
 
 public class ExecutionEnvUtil {
 
+
     private static final String FILE = "file";
     private static final String F = "f";
     private static final String SQL_FILE = "sqlFile";
     private static final String UTF_8 = "utf-8";
+    private static final String PRE_SLASH_STAR = "/*";
+    private static final String PRE_STAR = "*";
+    private static final String PRE_DOUBLE_SLASH = "//";
+    private static final String SEMICOLON = ";";
 
     /**
      * @param args args from external config file
@@ -43,10 +48,13 @@ public class ExecutionEnvUtil {
                 StringBuilder stringBuilder = new StringBuilder();
                 String line="";
                 while ((line=bufferedReader.readLine() )!= null){
+                    if ( line.startsWith(PRE_SLASH_STAR) | line.startsWith(PRE_STAR) | line.startsWith(PRE_DOUBLE_SLASH)){
+                        continue;
+                    }
                     stringBuilder.append(line);
                 }
                 String s2 = stringBuilder.toString();
-                String[] sqlList = s2.split(";");
+                String[] sqlList = s2.split(SEMICOLON);
                 for (int i = 0; i < sqlList.length; i++) {
                     props.put(SqlTypeEnum.getRealValue(i),sqlList[i]);
                 }
@@ -106,6 +114,7 @@ public class ExecutionEnvUtil {
      */
     public static StreamExecutionEnvironment getEnv(ParameterTool parameterTool) throws  Exception{
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
         // config restart strategy
         env.getConfig().setRestartStrategy(RestartStrategies.fixedDelayRestart(4,60000));
         if (parameterTool.getBoolean(PropertiesConstants.STREAM_CHECKPOINT_ENABLE,true)){
