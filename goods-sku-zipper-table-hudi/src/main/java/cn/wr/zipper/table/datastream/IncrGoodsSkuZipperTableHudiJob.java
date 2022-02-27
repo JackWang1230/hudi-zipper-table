@@ -4,7 +4,6 @@ import cn.wr.zipper.table.constants.PropertiesConstants;
 import cn.wr.zipper.table.constants.SQLConstants;
 import cn.wr.zipper.table.flatmap.CanalTransModelFlatMap;
 import cn.wr.zipper.table.flatmap.UpdateOrInsertFlatMap;
-import cn.uniodnrug.zipper.table.model.*;
 import cn.wr.zipper.table.utils.ExecutionEnvUtil;
 import cn.wr.zipper.table.utils.KafkaConfigUtil;
 import cn.wr.zipper.table.model.CanalTransDataModel;
