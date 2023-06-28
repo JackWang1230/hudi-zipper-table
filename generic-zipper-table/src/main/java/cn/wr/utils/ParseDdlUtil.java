@@ -24,6 +24,9 @@ public class ParseDdlUtil {
 
 
     private static final String REGULAR_EXPRESSION = "(?<=\\().*?(?=(WITH|with))";
+
+    // 逗号前面没有一个或多个非逗号字符紧跟一个左括号 (，即逗号不在括号内。逗号后面不是一个数字，即逗号后面没有空格。
+    private static final String REGULAR_EXP2 = "(?<!\\([^,]\\+),(?!\\d)";
     private static final String PARTITIONED_BY = "partitioned by";
 
     /**
@@ -41,6 +44,8 @@ public class ParseDdlUtil {
             String colsAndTypes = null;
             if (matcher.find()) {
                 String initValues = matcher.group().trim().toLowerCase();
+                // 解决场景如下 id int,price decimal(10,2),name string场景下无法区分逗号是否在括号内，导致无法正确解析字段及数据类型
+                initValues = Pattern.compile(REGULAR_EXP2).matcher(initValues).replaceAll(", ");
                 // 考虑sql中是否包含分区字段
                 colsAndTypes = initValues.contains(PARTITIONED_BY) ?
                         initValues.split(PARTITIONED_BY)[0].trim().
@@ -106,6 +111,7 @@ public class ParseDdlUtil {
         for (int i = 0; i < type.size(); i++) {
 
             String fieldType = type.get(i).toLowerCase();
+            // fieldType=decimal(10,2), 特殊处理
             if (fieldType.contains("decimal")) {
                 fieldType = "decimal";
             }

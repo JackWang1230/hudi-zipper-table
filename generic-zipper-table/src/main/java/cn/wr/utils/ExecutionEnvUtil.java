@@ -55,6 +55,7 @@ public class ExecutionEnvUtil {
                 }
                 String s2 = stringBuilder.toString();
                 String[] sqlList = s2.split(SEMICOLON);
+                // 基于枚举值注入了sql文本的属性
                 for (int i = 0; i < sqlList.length; i++) {
                     props.put(SqlTypeEnum.getRealValue(i),sqlList[i]);
                 }
